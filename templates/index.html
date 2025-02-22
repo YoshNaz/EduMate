@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block head %}
+<h1 class="header-title" style="text-align: center; font-size: 24px;">EduMate Beta 0.1</h1>
+{% endblock %}
+{% block body %}
+<div class="content">
+    <h1 style="text-align: center; font-size: 24px;">Upload book/slide here</h1>
+    <form action="/action_page.php" style="text-align: center;">
+        <input type="file" id="myFile" name="filename">
+        <input type="submit">
+    </form>
+{% endblock%}
