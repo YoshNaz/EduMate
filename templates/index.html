@@ -16,9 +16,16 @@
     </div>
 </div>
 
+<div class="content">
+    <h1 style="text-align: center; font-size: 24px;">Uploaded books/slides</h1>
+    <div style="text-align: center;">
+        {% for file in files %}
+        <a href="{{ url_for('process_file', file_id=file.id) }}">{{ file.filename }}</a><br>
+        {% endfor %}
+    </div>
+
 <script>
-document.getElementById('uploadForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent the default form submission
+document.getElementById('uploadForm').addEventListener('submit', function(event) { // Prevent the default form submission
 
     var formData = new FormData(this);
 
