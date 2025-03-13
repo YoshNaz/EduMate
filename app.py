@@ -39,8 +39,16 @@ def process_file(file_id):
     # Pass raw binary data to the summarizer
     summary = summarize(file_data.data, file_data.filename)
 
-    return f"<h1>Summary:</h1><p>{summary}</p>"
+    return render_template("summarymenu.html", summary=summary, file_id=file_id)
 
+@app.route("/flashcard/<int:file_id>")
+def flashcard(file_id):
+    file_data = Todo.query.get(file_id)
+    if file_data is None:
+        return "File not found", 404
+
+    summary = summarize(file_data.data, file_data.filename)
+    return render_template("flashcard.html", summary=summary,)
 
 if __name__ == "__main__":
     app.run(debug=True)

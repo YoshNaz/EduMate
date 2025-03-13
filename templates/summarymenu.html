@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block head %}
+<h1 class="header-title" style="text-align: center; font-size: 24px;">EduMate Beta 0.1</h1>
+{% endblock %}
+
+{% block body %}
+<div class="content" style="text-align: left; padding: 20px; max-width: 800px; margin: auto;">
+    <h1 style="font-size: 24px; text-align: center;">Summary:</h1>
+    
+    <p style="line-height: 1.8; font-size: 18px;">
+        {{ summary | replace('.', '.<br><br>') | safe }}
+    </p>
+    <a href="{{ url_for('flashcard',file_id = file_id) }}" style="text-align: center; display: block; margin-top: 20px;">Back to homepage</a>
+</div>
+{% endblock %}
