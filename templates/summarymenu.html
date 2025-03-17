@@ -11,6 +11,6 @@
     <p style="line-height: 1.8; font-size: 18px;">
         {{ summary | replace('.', '.<br><br>') | safe }}
     </p>
-    <a href="{{ url_for('flashcard',file_id = file_id) }}" style="text-align: center; display: block; margin-top: 20px;">Back to homepage</a>
+    <a href="{{ url_for('flashcard',file_id = file_id) }}" style="text-align: center; display: block; margin-top: 20px;">Generate Flashcard</a>
 </div>
 {% endblock %}

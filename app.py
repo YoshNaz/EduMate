@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import io
 from summarizer import summarize
+from flashcard import card_gen
+import json
 
 app=Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
@@ -36,10 +37,9 @@ def process_file(file_id):
     if file_data is None:
         return "File not found", 404
 
-    # Pass raw binary data to the summarizer
-    summary = summarize(file_data.data, file_data.filename)
+    formatted_notes, summary = summarize(file_id, file_data.data, file_data.filename)
 
-    return render_template("summarymenu.html", summary=summary, file_id=file_id)
+    return render_template("summarymenu.html", summary=formatted_notes, file_id=file_id)
 
 @app.route("/flashcard/<int:file_id>")
 def flashcard(file_id):
@@ -47,8 +47,13 @@ def flashcard(file_id):
     if file_data is None:
         return "File not found", 404
 
-    summary = summarize(file_data.data, file_data.filename)
-    return render_template("flashcard.html", summary=summary,)
+    flashcards_json = card_gen(file_id)
+    flashcards = json.loads(flashcards_json)
+    
+    print("Generated Flashcards:", flashcards)
+
+    return render_template("flashcard.html", flashcards=flashcards)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -5,5 +5,16 @@
 {% endblock %}
 
 {% block body %}
+    <h1 style="font-size: 24px; text-align: center;">Flashcards:</h1>
 
+    {% if flashcards %}
+        <ul style="font-size: 18px; line-height: 1.8;">
+            {% for card in flashcards %}
+                <li><strong>Q:</strong> {{ card.question }}<br>
+                    <strong>A:</strong> {{ card.answer }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p style="text-align: center;">No flashcards generated.</p>
+    {% endif %}
 {% endblock %}
