@@ -3,13 +3,18 @@ import fitz  # PyMuPDF
 import pytesseract
 from transformers import BartForConditionalGeneration, BartTokenizer
 import io  # To handle BytesIO
+import os
+import sqlite3
 
 # Load AI model
 model = BartForConditionalGeneration.from_pretrained("facebook/bart-large-cnn")
 tokenizer = BartTokenizer.from_pretrained("facebook/bart-large-cnn")
 
+# Path to SQLite database
+DB_PATH = os.path.join(os.path.dirname(__file__), "instance", "test.db")
 
-def summarize(file_content, file_name):
+
+def summarize(file_id, file_content, file_name):
     text = ""
 
     # **Check File Type Based on Extension**
@@ -28,8 +33,6 @@ def summarize(file_content, file_name):
     elif file_name.lower().endswith((".png", ".jpg", ".jpeg")):
         try:
             image = Image.open(io.BytesIO(file_content))  # Open image from BytesIO
-
-            # Extract text using OCR
             text = pytesseract.image_to_string(image, config="--psm 6")
 
             if not text.strip():
@@ -71,4 +74,36 @@ def summarize(file_content, file_name):
         f"# Summary Notes\n{summary}\n\n### Key Points\n{chr(10).join(short_notes)}"
     )
 
-    return formatted_notes
+    # **Save summary to database**
+    save_summary_to_db(file_id, summary)
+
+    return formatted_notes, summary
+
+
+def save_summary_to_db(file_id, summary):
+    """Stores the summarized text in the database linked to a file_id."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    # Ensure table exists
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS summaries (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        file_id INTEGER UNIQUE,
+        summary TEXT,
+        FOREIGN KEY (file_id) REFERENCES files(id)
+    )
+    """)
+
+    # Insert or update summary (avoid duplicates)
+    cursor.execute(
+        """
+    INSERT INTO summaries (file_id, summary) 
+    VALUES (?, ?) 
+    ON CONFLICT(file_id) DO UPDATE SET summary = ?
+    """,
+        (file_id, summary, summary),
+    )
+
+    conn.commit()
+    conn.close()
