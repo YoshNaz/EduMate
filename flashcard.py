@@ -21,7 +21,7 @@ def fetch_summary(file_id):
 
 
 def card_gen(file_id, num_flashcards=5):
-    """Generates flashcards using OpenAI."""
+    
     summarized_text = fetch_summary(file_id)
     if not summarized_text or summarized_text.strip() == "":
         return json.dumps({"error": "No summary found for this file ID"}, indent=4)
