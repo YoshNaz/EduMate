@@ -11,7 +11,6 @@ DB_PATH = os.path.join(os.path.dirname(__file__), "instance", "test.db")
 
 
 def fetch_summary(file_id):
-    """Fetch summarized text from the database."""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("SELECT summary FROM summaries WHERE file_id = ?", (file_id,))
