@@ -11,7 +11,6 @@ DB_PATH = os.path.join(os.path.dirname(__file__), "instance", "test.db")
 
 
 def fetch_summary(file_id):
-    """Fetches the summarized text from the database."""
     try:
         with sqlite3.connect(DB_PATH) as conn:
             cursor = conn.cursor()
@@ -32,7 +31,6 @@ def fetch_summary(file_id):
 
 
 def quiz_gen(file_id, num_questions=5):
-    """Generates quiz questions from the summarized text."""
     summarized_text = fetch_summary(file_id)
     if not summarized_text or not summarized_text.strip():
         return json.dumps({"error": "No summary found for this file ID"}, indent=4)
