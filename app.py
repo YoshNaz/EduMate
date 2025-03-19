@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from summarizer import summarize
@@ -26,10 +26,13 @@ def index():
         upload = Todo(filename=file.filename, data=file.read())
         db.session.add(upload)
         db.session.commit()
+        
+    # ✅ Return the new file_id in JSON format to make sure that file name pass in UploadFrontend
+    return jsonify({"file_id": upload.id})
 
     # Fetch files from the Todo table
     files = db.session.query(Todo).group_by(Todo.filename, Todo.data).all()
-    return render_template("index.html", files=files)
+    return render_template("UploadFrontEnd.html", files=files)
 
 
 @app.route("/process/<int:file_id>")
@@ -40,7 +43,7 @@ def process_file(file_id):
 
     formatted_notes, summary = summarize(file_id, file_data.data, file_data.filename)
 
-    return render_template("summarymenu.html", summary=formatted_notes, file_id=file_id)
+    return render_template("SummaryFrontEnd.html", summary=formatted_notes, file_id=file_id)
 
 @app.route("/flashcard/<int:file_id>")
 def flashcard(file_id):
