@@ -33,9 +33,6 @@
             font-size: 16px;
         }
         .file-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             padding: 5px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
@@ -64,13 +61,13 @@
 <body>
     <div class="upload-container">
         <div class="logo">
-            <img src="https://github.com/YoshNaz/EduMate/blob/8b3ee3cf1bfc58a949d0422c62745cef220b31ad/EduMate%20logo.jpg" alt="EduMate Logo">
+            <img src="https://github.com/YoshNaz/EduMate/blob/212835480e75799c58f549d8d5e0b0e4f910c8cb/image.png" alt="EduMate Logo" style="max-width: 100px;">
         </div>
         <h2 class="mb-3">EduMate Beta 0.1</h2>
         <p>Upload book/slide here</p>
 
         <!-- Upload Form -->
-        <form id="upload-form" method="POST" enctype="multipart/form-data">
+        <form id="upload-form" method="POST" action="/" enctype="multipart/form-data">
             <input type="file" id="file-input" class="form-control mb-3" name="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.ppt,.pptx,.txt">
             <button type="submit" class="btn btn-primary">Upload</button>
         </form>
@@ -80,11 +77,11 @@
         <!-- Uploaded Files Section -->
         <div class="content">
             <h1 style="text-align: center; font-size: 24px;">Uploaded books/slides</h1>
-            <div id="file-list" style="text-align: center;">
+            <div id="file-list">
                 {% for file in files %}
-                <a href="{{ url_for('process_file', file_id=file.id) }}" class="file-item">
-                    {{ file.filename }}
-                </a><br>
+                    <div class="file-item">
+                        <a href="{{ url_for('process_file', file_id=file.id) }}">{{ file.filename }}</a>
+                    </div>
                 {% endfor %}
             </div>
         </div>
@@ -114,12 +111,14 @@
                     contentType: false,
                     processData: false,
                     success: function(response) {
-                        $('#upload-status').html('<p class="text-success">File uploaded successfully!</p>');
-
-                        // Redirect to the processing page
-                        setTimeout(function() {
-                            window.location.href = "/process/" + response.file_id;
-                        }, 2000);
+                        if (response.file_id) {
+                            $('#upload-status').html('<p class="text-success">File uploaded successfully!</p>');
+                            setTimeout(function() {
+                                window.location.href = "/process/" + response.file_id;
+                            }, 2000);
+                        } else {
+                            $('#upload-status').html('<p class="text-danger">Unexpected response. Please refresh.</p>');
+                        }
                     },
                     error: function() {
                         $('#upload-status').html('<p class="text-danger">Upload failed. Try again.</p>');
