@@ -29,7 +29,7 @@ def index():
 
     # Fetch files from the Todo table
     files = db.session.query(Todo).group_by(Todo.filename, Todo.data).all()
-    return render_template("index.html", files=files)
+    return render_template("UploadFrontEnd.html", files=files)
 
 
 @app.route("/process/<int:file_id>")
@@ -38,9 +38,9 @@ def process_file(file_id):
     if file_data is None:
         return "File not found", 404
 
-    formatted_notes, summary = summarize(file_id, file_data.data, file_data.filename)
-
-    return render_template("summarymenu.html", summary=formatted_notes, file_id=file_id)
+    formatted_notes = summarize(file_id, file_data.data, file_data.filename)
+    print(formatted_notes)
+    return render_template("SummaryFrontEnd.html", summary=formatted_notes, file_id=file_id)
 
 @app.route("/flashcard/<int:file_id>")
 def flashcard(file_id):
@@ -52,7 +52,7 @@ def flashcard(file_id):
     flashcards = json.loads(flashcards_json)
     
 
-    return render_template("flashcard.html", flashcards=flashcards)
+    return render_template("FlashcardFrontEnd.html", flashcards=flashcards)
 
 @app.route("/quiz/<int:file_id>", methods=["GET", "POST"])
 def quiz(file_id):
@@ -94,7 +94,7 @@ def quiz(file_id):
         )
 
     return render_template(
-        "quiz.html", quiz=quiz_data, score=None, total=None, results=None
+        "QuizFrontEnd.html", quiz=quiz_data, score=None, total=None, results=None
     )
 
 if __name__ == "__main__":
