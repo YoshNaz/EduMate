@@ -33,6 +33,9 @@
             font-size: 16px;
         }
         .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding: 5px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
@@ -56,74 +59,69 @@
         .btn-primary:hover {
             background-color: #D569C2;
         }
+        #upload-status {
+            margin-top: 10px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
     <div class="upload-container">
         <div class="logo">
-            <img src="https://github.com/YoshNaz/EduMate/blob/212835480e75799c58f549d8d5e0b0e4f910c8cb/image.png" alt="EduMate Logo" style="max-width: 100px;">
+            <img src="https://github.com/YoshNaz/EduMate/blob/f01cedd2f62f36c7162b2ae750894669f6c8c135/image.png" alt="EduMate Logo">
         </div>
         <h2 class="mb-3">EduMate Beta 0.1</h2>
         <p>Upload book/slide here</p>
 
         <!-- Upload Form -->
-        <form id="upload-form" method="POST" action="/" enctype="multipart/form-data">
-            <input type="file" id="file-input" class="form-control mb-3" name="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.ppt,.pptx,.txt">
+        <form id="upload-form" method="POST" enctype="multipart/form-data">
+            <input type="file" id="file-input" class="form-control mb-3" name="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.ppt,.pptx,.txt" required>
             <button type="submit" class="btn btn-primary">Upload</button>
         </form>
 
-        <div id="upload-status" style="margin-top: 10px;"></div>
+        <div id="upload-status"></div>
 
         <!-- Uploaded Files Section -->
         <div class="content">
             <h1 style="text-align: center; font-size: 24px;">Uploaded books/slides</h1>
-            <div id="file-list">
+            <div id="file-list" style="text-align: center;">
                 {% for file in files %}
-                    <div class="file-item">
-                        <a href="{{ url_for('process_file', file_id=file.id) }}">{{ file.filename }}</a>
-                    </div>
+                <a href="{{ url_for('process_file', file_id=file.id) }}" class="file-item">
+                    {{ file.filename }}
+                </a><br>
                 {% endfor %}
             </div>
         </div>
     </div>
 
-    <!-- jQuery Script for AJAX Upload -->
+    <!-- JavaScript for AJAX Upload -->
     <script>
-        $(document).ready(function(){
-            $('#upload-form').submit(function(event){
-                event.preventDefault();
+        document.getElementById("upload-form").addEventListener("submit", function(event) {
+            event.preventDefault();  // Prevent default form submission
+            let formData = new FormData(this);
 
-                let file = $('#file-input')[0].files[0];
-                if (!file) {
-                    $('#upload-status').html('<p class="text-danger">Please select a file.</p>');
-                    return;
+            // Show loading message
+            let uploadStatus = document.getElementById("upload-status");
+            uploadStatus.innerHTML = "Uploading file... Please wait.";
+
+            fetch("/", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.file_id) {
+                    uploadStatus.innerHTML = "File uploaded successfully! Redirecting...";
+                    setTimeout(() => {
+                        window.location.href = "/process/" + data.file_id;
+                    }, 2000);
+                } else {
+                    uploadStatus.innerHTML = "File upload failed. Please try again.";
                 }
-
-                let formData = new FormData();
-                formData.append("file", file);
-
-                $('#upload-status').html('<p class="text-info">Uploading...</p>');
-
-                $.ajax({
-                    url: '/',  
-                    type: 'POST',
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function(response) {
-                        if (response.file_id) {
-                            $('#upload-status').html('<p class="text-success">File uploaded successfully!</p>');
-                            setTimeout(function() {
-                                window.location.href = "/process/" + response.file_id;
-                            }, 2000);
-                        } else {
-                            $('#upload-status').html('<p class="text-danger">Unexpected response. Please refresh.</p>');
-                        }
-                    },
-                    error: function() {
-                        $('#upload-status').html('<p class="text-danger">Upload failed. Try again.</p>');
-                    }
-                });
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                uploadStatus.innerHTML = "An error occurred. Please try again.";
             });
         });
     </script>
