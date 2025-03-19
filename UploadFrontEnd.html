@@ -1,26 +1,13 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><b>EduMate Beta 0.1 - Upload</b></title>
+    <title>EduMate Beta 0.1 - Upload</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        .mb-3 {
-            font-family: 'Montserrat', sans-serif; 
-            font-weight: 700;
-            font-size: 2.0rem; 
-            text-align: center; 
-            margin-bottom: 10px;
-            line-height: 1.2;
-        }
-        /* Seperate file input from header style */
-        #file-input {
-            font-size: initial;
-            font-weight: normal;
-            font-family: inherit;
-        }
         body {
             background: linear-gradient(to top, #000000, #230033, #4A0055, #730077);
             display: flex;
@@ -40,13 +27,24 @@
             text-align: center;
             width: 400px;
         }
-        .logo {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
+        .file-list {
+            text-align: left;
+            margin-top: 20px;
+            font-size: 16px;
         }
-        .logo img {
-            width: 150px;
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .file-item a {
+            color: #D569C2;
+            text-decoration: none;
+        }
+        .file-item a:hover {
+            text-decoration: underline;
         }
         .btn-primary {
             background-color: #7A1F7A;
@@ -66,25 +64,39 @@
 <body>
     <div class="upload-container">
         <div class="logo">
-            <img src="EduMate logo.jpg" alt="EduMate Logo">
+            <img src="https://github.com/YoshNaz/EduMate/blob/8b3ee3cf1bfc58a949d0422c62745cef220b31ad/EduMate%20logo.jpg" alt="EduMate Logo">
         </div>
-
         <h2 class="mb-3">EduMate Beta 0.1</h2>
         <p>Upload book/slide here</p>
-        <form id="upload-form" enctype="multipart/form-data">
-            <input type="file" id="file-input" class="form-control mb-3" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.ppt,.pptx,.txt">
-            
+
+        <!-- Upload Form -->
+        <form id="upload-form" method="POST" enctype="multipart/form-data">
+            <input type="file" id="file-input" class="form-control mb-3" name="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.ppt,.pptx,.txt">
             <button type="submit" class="btn btn-primary">Upload</button>
         </form>
-        <div id="upload-status" class="mt-3"></div>
+
+        <div id="upload-status" style="margin-top: 10px;"></div>
+
+        <!-- Uploaded Files Section -->
+        <div class="content">
+            <h1 style="text-align: center; font-size: 24px;">Uploaded books/slides</h1>
+            <div id="file-list" style="text-align: center;">
+                {% for file in files %}
+                <a href="{{ url_for('process_file', file_id=file.id) }}" class="file-item">
+                    {{ file.filename }}
+                </a><br>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 
+    <!-- jQuery Script for AJAX Upload -->
     <script>
         $(document).ready(function(){
             $('#upload-form').submit(function(event){
                 event.preventDefault();
-                let file = $('#file-input')[0].files[0];
 
+                let file = $('#file-input')[0].files[0];
                 if (!file) {
                     $('#upload-status').html('<p class="text-danger">Please select a file.</p>');
                     return;
@@ -96,24 +108,18 @@
                 $('#upload-status').html('<p class="text-info">Uploading...</p>');
 
                 $.ajax({
-                    url: '/',  // Sends file to the backend to store in DB
+                    url: '/',  
                     type: 'POST',
                     data: formData,
                     contentType: false,
                     processData: false,
                     success: function(response) {
                         $('#upload-status').html('<p class="text-success">File uploaded successfully!</p>');
-                        
-                        // Show history list of uploaded file
+
+                        // Redirect to the processing page
                         setTimeout(function() {
-                            window.location.href = "/";
-                        }, 2000); 
-                        
-                        // Redirect to next page for summary
-                        setTimeout(function() {
-                            window.location.href = "SummaryFrontEnd.html";
-                        }, 3000);
-                        
+                            window.location.href = "/process/" + response.file_id;
+                        }, 2000);
                     },
                     error: function() {
                         $('#upload-status').html('<p class="text-danger">Upload failed. Try again.</p>');
