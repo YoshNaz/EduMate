@@ -26,15 +26,10 @@ def index():
         upload = Todo(filename=file.filename, data=file.read())
         db.session.add(upload)
         db.session.commit()
-        
-    # ✅ Return the new file_id in JSON format to make sure that file name pass in UploadFrontend
-    return jsonify({"file_id": upload.id})
 
     # Fetch files from the Todo table
     files = db.session.query(Todo).group_by(Todo.filename, Todo.data).all()
     return render_template("UploadFrontEnd.html", files=files)
-
-
 @app.route("/process/<int:file_id>")
 def process_file(file_id):
     file_data = Todo.query.get(file_id)
