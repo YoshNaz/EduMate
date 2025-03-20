@@ -110,32 +110,41 @@
 
     <script>
         let quizData = [];
-
-        // Fetch questions from backend API
+        let fileId = window.location.pathname.split("/").pop().split("?")[0];
+        console.log("Extracted fileId:", fileId)
         async function loadQuiz() {
+            try {
+                let response = await fetch(`/api/quiz/${fileId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
 
-        try {
-            let response = await fetch(`/quiz/${file_id}`);  // Ensure `Todo_id` is properly defined
-            quizData = await response.json();
-        
-            let formHtml = "";
-            quizData.forEach((q, index) => {
-                formHtml += `
-                    <div class="question">Q${index + 1}: ${q.question}</div>
-                    <input type="text" class="input-field" id="q${index}">
-                `;
-            });
+                let data = await response.json();
+                console.log("Fetched Quiz Data:", data); 
 
-            document.getElementById("quiz-form").innerHTML = formHtml;
-        } catch (error) {
-            console.error("Error fetching quiz:", error);
-            document.getElementById("quiz-form").innerHTML = "<p>Error loading quiz. Please try again.</p>";
+                
+                quizData = data.quiz;  
+
+                if (!Array.isArray(quizData)) {
+                    throw new Error("Quiz data is not an array");
+                }
+
+                let formHtml = "";
+                quizData.forEach((q, index) => {
+                    formHtml += `
+                        <div class="question">Q${index + 1}: ${q.question}</div>
+                        <input type="text" class="input-field" id="q${index}">
+                    `;
+                });
+
+                document.getElementById("quiz-form").innerHTML = formHtml;
+            } catch (error) {
+                console.error("Error fetching quiz:", error);
+                document.getElementById("quiz-form").innerHTML = "<p>Error loading quiz. Please try again.</p>";
+            }
         }
-    }
 
-
-
-        // Check answers when user submits
         function checkAnswers() {
             let score = 0;
             let feedbackHtml = "";

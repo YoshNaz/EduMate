@@ -46,19 +46,25 @@ def process_file(file_id):
 def flashcard(file_id):
     return render_template("FlashcardFrontEnd.html", file_id=file_id)
 
+@app.route("/quiz/<int:file_id>")
+def quizr(file_id):
+    return render_template("QuizFrontEnd.html", file_id=file_id)
 
-@app.route("/quiz/<int:file_id>", methods=["GET", "POST"])
+
+@app.route("/api/quiz/<int:file_id>", methods=["GET", "POST"])
 def quiz(file_id):
-    file_id = int(file_id)  
-    quiz_json = quiz_gen(file_id)
+    file_id = int(file_id)
+    quiz_json = quiz_gen(file_id)  # Ensure this returns a valid JSON string
     print("Quiz JSON:", quiz_json)
-    quiz_data = json.loads(quiz_json).get("quiz", [])  # Convert JSON to Python list
 
-    score = None
-    results = []
+    try:
+        quiz_data = json.loads(quiz_json).get("quiz", [])  # Convert JSON to Python list
+    except json.JSONDecodeError:
+        return jsonify({"error": "Invalid JSON format from quiz generator"}), 500
 
     if request.method == "POST":
         score = 0
+        results = []
         total_questions = len(quiz_data)
 
         for i, q in enumerate(quiz_data, start=1):
@@ -78,17 +84,11 @@ def quiz(file_id):
                 }
             )
 
-        return render_template(
-            "QuizFrontEnd.html",
-            quiz=quiz_data,
-            score=score,
-            total=total_questions,
-            results=results,
+        return jsonify(
+            {"score": score, "total_questions": total_questions, "results": results}
         )
 
-    return render_template(
-        "QuizFrontEnd.html", quiz=quiz_data, score=None, total=None, results=None
-    )
+    return jsonify({"quiz": quiz_data})
 
 @app.route("/api/flashcard/<int:file_id>")
 def get_flashcards(file_id):
