@@ -30,14 +30,16 @@ def index():
     # Fetch files from the Todo table
     files = db.session.query(Todo).group_by(Todo.filename, Todo.data).all()
     return render_template("UploadFrontEnd.html", files=files)
+
+
 @app.route("/process/<int:file_id>")
 def process_file(file_id):
     file_data = Todo.query.get(file_id)
     if file_data is None:
         return "File not found", 404
 
-    formatted_notes, summary = summarize(file_id, file_data.data, file_data.filename)
 
+    formatted_notes, summary = summarize(file_id, file_data.data, file_data.filename)
     return render_template("SummaryFrontEnd.html", summary=formatted_notes, file_id=file_id)
 
 @app.route("/flashcard/<int:file_id>")

@@ -59,10 +59,12 @@
         .btn-primary:hover {
             background-color: #D569C2;
         }
+
         #upload-status {
             margin-top: 10px;
             font-size: 14px;
         }
+
     </style>
 </head>
 <body>
@@ -75,11 +77,13 @@
 
         <!-- Upload Form -->
         <form id="upload-form" method="POST" enctype="multipart/form-data">
+
             <input type="file" id="file-input" class="form-control mb-3" name="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.ppt,.pptx,.txt" required>
             <button type="submit" class="btn btn-primary">Upload</button>
         </form>
 
         <div id="upload-status"></div>
+
 
         <!-- Uploaded Files Section -->
         <div class="content">
@@ -93,6 +97,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- JavaScript for AJAX Upload -->
     <script>
@@ -122,9 +127,12 @@
             .catch(error => {
                 console.error("Error:", error);
                 uploadStatus.innerHTML = "An error occurred. Please try again.";
+
             });
         });
     </script>
 </body>
 </html>
+
+
 

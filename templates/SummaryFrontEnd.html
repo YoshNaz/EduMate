@@ -85,12 +85,14 @@
 <body>
     <div class="container-box">
         <h3>Summary</h3>
+
         <div class="summary-box">
             <p>{{ summary }}</p> 
         </div>
         <div class="button-group">
             <button class="btn btn-QuizFlashcard" onclick="goToPage('quiz/{{ file_id }}')">Quiz</button>
             <button class="btn btn-QuizFlashcard" onclick="goToPage('flashcard/{{ file_id }}')">Flashcard</button>
+
         </div>
         
         <!-- Home Button Centered Below -->
@@ -99,12 +101,15 @@
 
     <script>
          // Function to navigate to another page
+
         function goToPage(route) {
             window.location.href = '/' + route;
+
         }
         
         // Function to go back to UploadFrontEnd.html
         function goBack() {
+
             window.location.href = '/';
         }
         // Fetch summary from backend when page loads
@@ -119,6 +124,7 @@
                 })
                 .catch(error => {
                     document.getElementById("summary-content").innerHTML = "<p class='text-danger'>Failed to load summary.</p>";
+
                 });
         });
     </script>

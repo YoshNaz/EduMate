@@ -113,6 +113,7 @@
 
         // Fetch questions from backend API
         async function loadQuiz() {
+
         try {
             let response = await fetch(`/quiz/${file_id}`);  // Ensure `Todo_id` is properly defined
             quizData = await response.json();
@@ -131,6 +132,7 @@
             document.getElementById("quiz-form").innerHTML = "<p>Error loading quiz. Please try again.</p>";
         }
     }
+
 
 
         // Check answers when user submits
@@ -158,7 +160,9 @@
         loadQuiz();
         
         function goHome() {
+
             window.location.href = "/";
+
         }
         
     </script>

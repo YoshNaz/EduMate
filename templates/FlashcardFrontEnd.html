@@ -173,6 +173,7 @@
 
         async function fetchFlashcards() {
             try {
+
                 const response = await fetch(`/api/flashcard/${fileId}`);
                 flashcards = await response.json();
 
@@ -214,7 +215,9 @@
         fetchFlashcards();
         
         function goHome() {
+
             window.location.href = "/";
+
         }
         
     </script>
