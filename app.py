@@ -38,8 +38,8 @@ def process_file(file_id):
     if file_data is None:
         return "File not found", 404
 
-    formatted_notes = summarize(file_id, file_data.data, file_data.filename)
-    print(formatted_notes)
+
+    formatted_notes, summary = summarize(file_id, file_data.data, file_data.filename)
     return render_template("SummaryFrontEnd.html", summary=formatted_notes, file_id=file_id)
 
 @app.route("/flashcard/<int:file_id>")
@@ -86,7 +86,7 @@ def quiz(file_id):
             )
 
         return render_template(
-            "quiz.html",
+            "QuizFrontEnd.html",
             quiz=quiz_data,
             score=score,
             total=total_questions,

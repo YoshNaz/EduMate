@@ -85,12 +85,14 @@
 <body>
     <div class="container-box">
         <h3>Summary</h3>
-        <div class="summary-box" id="summary-content">
-            <p>Loading summary...</p>
+
+        <div class="summary-box">
+            <p>{{ summary }}</p> 
         </div>
         <div class="button-group">
-            <button class="btn btn-QuizFlashcard" onclick="goToPage('QuizFrontEnd.html')">Quiz</button>
-            <button class="btn btn-QuizFlashcard" onclick="goToPage('FlashcardFrontEnd.html')">Flashcard</button>
+            <button class="btn btn-QuizFlashcard" onclick="goToPage('quiz/{{ file_id }}')">Quiz</button>
+            <button class="btn btn-QuizFlashcard" onclick="goToPage('flashcard/{{ file_id }}')">Flashcard</button>
+
         </div>
         
         <!-- Home Button Centered Below -->
@@ -99,25 +101,30 @@
 
     <script>
          // Function to navigate to another page
-        function goToPage(page) {
-            window.location.href = page;
+
+        function goToPage(route) {
+            window.location.href = '/' + route;
+
         }
         
         // Function to go back to UploadFrontEnd.html
         function goBack() {
-            window.location.href = 'UploadFrontEnd.html';
+
+            window.location.href = '/';
         }
         // Fetch summary from backend when page loads
-        document.addEventListener("DOMContentLoaded", function() { //Load the backend
-            fetch('/api/summary')  // Backend URL for SUMMARY
+        document.addEventListener("DOMContentLoaded", function() {
+            const fileId = new URLSearchParams(window.location.search).get("file_id"); 
+            if (!fileId) return;
+        
+            fetch(`/api/summary/${fileId}`)
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById("summary-content").innerHTML = 
-                        `<p>${data.summary}</p>`;
+                    document.getElementById("summary-content").innerHTML = `<p>${data.summary}</p>`;
                 })
                 .catch(error => {
-                    document.getElementById("summary-content").innerHTML = 
-                        "<p class='text-danger'>Failed to load summary.</p>";
+                    document.getElementById("summary-content").innerHTML = "<p class='text-danger'>Failed to load summary.</p>";
+
                 });
         });
     </script>

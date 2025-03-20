@@ -59,6 +59,12 @@
         .btn-primary:hover {
             background-color: #D569C2;
         }
+
+        #upload-status {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
     </style>
 </head>
 <body>
@@ -71,11 +77,13 @@
 
         <!-- Upload Form -->
         <form id="upload-form" method="POST" enctype="multipart/form-data">
-            <input type="file" id="file-input" class="form-control mb-3" name="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.ppt,.pptx,.txt">
+
+            <input type="file" id="file-input" class="form-control mb-3" name="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.ppt,.pptx,.txt" required>
             <button type="submit" class="btn btn-primary">Upload</button>
         </form>
 
-        <div id="upload-status" style="margin-top: 10px;"></div>
+        <div id="upload-status"></div>
+
 
         <!-- Uploaded Files Section -->
         <div class="content">
@@ -90,43 +98,41 @@
         </div>
     </div>
 
-    <!-- jQuery Script for AJAX Upload -->
+
+    <!-- JavaScript for AJAX Upload -->
     <script>
-        $(document).ready(function(){
-            $('#upload-form').submit(function(event){
-                event.preventDefault();
+        document.getElementById("upload-form").addEventListener("submit", function(event) {
+            event.preventDefault();  // Prevent default form submission
+            let formData = new FormData(this);
 
-                let file = $('#file-input')[0].files[0];
-                if (!file) {
-                    $('#upload-status').html('<p class="text-danger">Please select a file.</p>');
-                    return;
+            // Show loading message
+            let uploadStatus = document.getElementById("upload-status");
+            uploadStatus.innerHTML = "Uploading file... Please wait.";
+
+            fetch("/", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.file_id) {
+                    uploadStatus.innerHTML = "File uploaded successfully! Redirecting...";
+                    setTimeout(() => {
+                        window.location.href = "/process/" + data.file_id;
+                    }, 2000);
+                } else {
+                    uploadStatus.innerHTML = "File upload failed. Please try again.";
                 }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                uploadStatus.innerHTML = "An error occurred. Please try again.";
 
-                let formData = new FormData();
-                formData.append("file", file);
-
-                $('#upload-status').html('<p class="text-info">Uploading...</p>');
-
-                $.ajax({
-                    url: '/',  
-                    type: 'POST',
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function(response) {
-                        $('#upload-status').html('<p class="text-success">File uploaded successfully!</p>');
-
-                        // Redirect to the processing page
-                        setTimeout(function() {
-                            window.location.href = "/process/" + response.file_id;
-                        }, 2000);
-                    },
-                    error: function() {
-                        $('#upload-status').html('<p class="text-danger">Upload failed. Try again.</p>');
-                    }
-                });
             });
         });
     </script>
 </body>
 </html>
+
+
+

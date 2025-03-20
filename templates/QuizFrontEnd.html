@@ -113,24 +113,27 @@
 
         // Fetch questions from backend API
         async function loadQuiz() {
-            try {
-                let response = await fetch("https://your-backend-api.com/get-quiz"); // Quiz Backend
-                quizData = await response.json();
-                
-                let formHtml = "";
-                quizData.forEach((q, index) => {
-                    formHtml += `
-                        <div class="question">Q${index + 1}: ${q.question}</div>
-                        <input type="text" class="input-field" id="q${index}">
-                    `;
-                });
 
-                document.getElementById("quiz-form").innerHTML = formHtml;
-            } catch (error) {
-                console.error("Error fetching quiz:", error);
-                document.getElementById("quiz-form").innerHTML = "<p>Error loading quiz. Please try again.</p>";
-            }
+        try {
+            let response = await fetch(`/quiz/${file_id}`);  // Ensure `Todo_id` is properly defined
+            quizData = await response.json();
+        
+            let formHtml = "";
+            quizData.forEach((q, index) => {
+                formHtml += `
+                    <div class="question">Q${index + 1}: ${q.question}</div>
+                    <input type="text" class="input-field" id="q${index}">
+                `;
+            });
+
+            document.getElementById("quiz-form").innerHTML = formHtml;
+        } catch (error) {
+            console.error("Error fetching quiz:", error);
+            document.getElementById("quiz-form").innerHTML = "<p>Error loading quiz. Please try again.</p>";
         }
+    }
+
+
 
         // Check answers when user submits
         function checkAnswers() {
@@ -157,7 +160,9 @@
         loadQuiz();
         
         function goHome() {
-            window.location.href = "UploadFrontEnd.html";
+
+            window.location.href = "/";
+
         }
         
     </script>
