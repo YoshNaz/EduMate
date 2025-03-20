@@ -170,13 +170,17 @@
         let flashcards = [];
         let currentCard = 0;
         let flipped = false;
+        let fileId = window.location.pathname.split("/").pop();
+        console.log("Extracted fileId:", fileId);
+
 
         async function fetchFlashcards() {
             try {
-
+                console.log("Fetching flashcards...");
                 const response = await fetch(`/api/flashcard/${fileId}`);
+                console.log("Response status:", response.status)
                 flashcards = await response.json();
-
+                console.log("Fetched flashcards:", flashcards);
                 if (flashcards.length > 0) {
                     updateFlashcard();
                 } else {
@@ -187,6 +191,7 @@
                 console.error("Error fetching flashcards:", error);
             }
         }
+
 
         function updateFlashcard() {
             document.getElementById("flashcard-front").innerHTML = `<p>Q: ${flashcards[currentCard].question}</p>`;

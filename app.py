@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from summarizer import summarize
@@ -44,15 +44,8 @@ def process_file(file_id):
 
 @app.route("/flashcard/<int:file_id>")
 def flashcard(file_id):
-    file_data = Todo.query.get(file_id)
-    if file_data is None:
-        return "File not found", 404
+    return render_template("FlashcardFrontEnd.html", file_id=file_id)
 
-    flashcards_json = card_gen(file_id)
-    flashcards = json.loads(flashcards_json)
-    
-
-    return render_template("FlashcardFrontEnd.html", flashcards=flashcards)
 
 @app.route("/quiz/<int:file_id>", methods=["GET", "POST"])
 def quiz(file_id):
@@ -96,6 +89,18 @@ def quiz(file_id):
     return render_template(
         "QuizFrontEnd.html", quiz=quiz_data, score=None, total=None, results=None
     )
+
+@app.route("/api/flashcard/<int:file_id>")
+def get_flashcards(file_id):
+    file_data = Todo.query.get(file_id)
+    if file_data is None:
+        return jsonify({"error": "File not found"}), 404
+
+    flashcards_json = card_gen(file_id)
+    flashcards = json.loads(flashcards_json)
+    print("Flashcards:", flashcards_json)
+
+    return jsonify(flashcards)
 
 if __name__ == "__main__":
     app.run(debug=True)
