@@ -55,7 +55,7 @@ def flashcard(file_id):
     flashcards = json.loads(flashcards_json)
     
 
-    return render_template("flashcard.html", flashcards=flashcards)
+    return render_template("FlashcardFrontEnd.html", flashcards=flashcards)
 
 @app.route("/quiz/<int:file_id>", methods=["GET", "POST"])
 def quiz(file_id):
@@ -89,7 +89,7 @@ def quiz(file_id):
             )
 
         return render_template(
-            "quiz.html",
+            "QuizFrontEnd.html",
             quiz=quiz_data,
             score=score,
             total=total_questions,
@@ -97,7 +97,7 @@ def quiz(file_id):
         )
 
     return render_template(
-        "quiz.html", quiz=quiz_data, score=None, total=None, results=None
+        "QuizFrontEnd.html", quiz=quiz_data, score=None, total=None, results=None
     )
 
 if __name__ == "__main__":
